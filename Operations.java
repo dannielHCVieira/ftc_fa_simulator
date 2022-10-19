@@ -3,6 +3,9 @@ import classes.State;
 import classes.Transition;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
+import org.xml.sax.SAXException;
 
 import javax.xml.XMLConstants;
 import javax.xml.parsers.DocumentBuilder;
@@ -17,8 +20,28 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.util.ArrayList;
+import java.util.List;
+import java.io.File;
+
+import javax.swing.JFileChooser;
+import javax.swing.filechooser.*;
 
 public class Operations {
+
+    public static String getFilePath() {
+        String path = "";
+        JFileChooser j = new JFileChooser(FileSystemView.getFileSystemView().getHomeDirectory());
+
+        int r = j.showSaveDialog(null);
+
+        if (r == JFileChooser.APPROVE_OPTION) {
+            path = j.getSelectedFile().getAbsolutePath();
+        } else
+            System.out.println("Cancelou abertura!");
+
+        return path;
+    }
 
     public static void saveAutomaton(Automaton automaton) throws ParserConfigurationException {
         DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
@@ -37,12 +60,11 @@ public class Operations {
         Element test = output.createElement("teste");
         root.appendChild(test);
 
-        automaton.getStates().forEach( state -> createState(state, output, root));
+        automaton.getStates().forEach(state -> createState(state, output, root));
         automaton.getTransitions().forEach(transition -> createTransition(transition, output, root));
 
         try {
-            FileOutputStream outputFile =
-                    new FileOutputStream("output.xml");
+            FileOutputStream outputFile = new FileOutputStream("output.xml");
             writeXml(output, outputFile);
         } catch (IOException e) {
             e.printStackTrace();
@@ -53,7 +75,7 @@ public class Operations {
 
     }
 
-    private static void createTransition(Transition transition, Document document, Element root){
+    private static void createTransition(Transition transition, Document document, Element root) {
         Element elementTransition = document.createElement("transition");
 
         Element from = document.createElement("from");
@@ -65,7 +87,7 @@ public class Operations {
         elementTransition.appendChild(to);
 
         Element read = document.createElement("read");
-        if(!transition.getRead().isEmpty()){
+        if (!transition.getRead().isEmpty()) {
             read.setTextContent(transition.getRead());
         }
         elementTransition.appendChild(read);
@@ -73,7 +95,7 @@ public class Operations {
         root.appendChild(elementTransition);
     }
 
-    private static void createState(State state, Document document, Element root){
+    private static void createState(State state, Document document, Element root) {
         Element elementState = document.createElement("state");
         elementState.setAttribute("id", state.getId());
         elementState.setAttribute("name", state.getName());
@@ -86,12 +108,12 @@ public class Operations {
         elementState.appendChild(x);
         elementState.appendChild(y);
 
-        if(state.isFinal()){
+        if (state.isFinal()) {
             Element finalState = document.createElement("final");
             elementState.appendChild(finalState);
         }
 
-        if(state.isInitial()){
+        if (state.isInitial()) {
             Element initialState = document.createElement("initial");
             elementState.appendChild(initialState);
         }
@@ -99,7 +121,7 @@ public class Operations {
     }
 
     private static void writeXml(Document doc,
-                                 OutputStream output)
+            OutputStream output)
             throws TransformerException {
 
         TransformerFactory transformerFactory = TransformerFactory.newInstance();
@@ -109,5 +131,77 @@ public class Operations {
 
         transformer.transform(source, result);
 
+    }
+
+    public static Automaton readXml() throws ParserConfigurationException, SAXException, IOException {
+        String path = getFilePath();
+        Document doc;
+
+        try {
+            File xmlFile = new File(path);
+            DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+            DocumentBuilder builder = factory.newDocumentBuilder();
+            doc = builder.parse(xmlFile);
+
+            // Extrair do arquivo XML a lista de estados e transições
+            List<State> stateList = getStatesXML(doc);
+            List<Transition> transitionList = getTransitionsXML(doc);
+            Automaton automatonRead = new Automaton(stateList, transitionList);
+            return automatonRead;
+        } catch (SAXException | IOException e) {
+            e.printStackTrace();
+        }
+
+        Automaton automatonRead = new Automaton(); // Passar a lista de transições e estados
+        return automatonRead;
+    }
+
+    public static List<State> getStatesXML(Document doc) {
+        NodeList stateList = doc.getElementsByTagName("state");
+
+        int len = stateList.getLength();
+        List<State> states = new ArrayList<State>(len);
+
+        for (int i = 0; i < len; i++) {
+            Node node = stateList.item(i);
+            if (node.getNodeType() == Node.ELEMENT_NODE) {
+                Element element = (Element) node;
+
+                String elementId = element.getAttribute("id");
+                String elementName = element.getAttribute("name");
+                Boolean elementInitial = element.getElementsByTagName("initial").getLength() > 0 ? true : false;
+                Boolean elementFinal = element.getElementsByTagName("final").getLength() > 0 ? true : false;
+
+                State state = new State(elementId, elementInitial, elementFinal, elementName);
+
+                states.add(state);
+            }
+        }
+
+        return states;
+    }
+
+    public static List<Transition> getTransitionsXML(Document doc) {
+        NodeList transitionList = doc.getElementsByTagName("transition");
+
+        int len = transitionList.getLength();
+        List<Transition> transitions = new ArrayList<Transition>(len);
+
+        for (int i = 0; i < len; i++) {
+            Node node = transitionList.item(i);
+            if (node.getNodeType() == Node.ELEMENT_NODE) {
+                Element element = (Element) node;
+
+                String elementFrom = element.getElementsByTagName("from").item(0).getTextContent();
+                String elementTo = element.getElementsByTagName("to").item(0).getTextContent();
+                String elementRead = element.getElementsByTagName("read").item(0).getTextContent();
+
+                Transition transition = new Transition(elementFrom, elementTo, elementRead);
+
+                transitions.add(transition);
+            }
+        }
+
+        return transitions;
     }
 }
