@@ -19,12 +19,12 @@ public class Main {
         var automaton = new Automaton(List.of(state), List.of(transition, transition2));
 
         try{
-            var str = "000111";
+            var str = "000111a";
             Operations.runAutomaton(str, automaton);
             System.out.println("Sentença aceita!");
 
         } catch (SentencaNaoAceita e) {
-            System.out.println("Sentença não foi aceita por autômato");
+            System.out.println(e.getMessage());
             //throw new RuntimeException(e);
         }
         //var automaton = Operations.readXml();

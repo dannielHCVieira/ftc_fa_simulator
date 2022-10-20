@@ -63,14 +63,14 @@ public class Operations {
             var transitionToMake = stateTransitions.stream()
                     .filter(transition -> transition.getRead().equals(String.valueOf(x)))
                     .findFirst()
-                    .orElseThrow(() -> new SentencaNaoAceita("Sentença não pertence à linguagem do autômato"));
+                    .orElseThrow(() -> new SentencaNaoAceita("Sentença não %s pertence à linguagem do autômato".formatted(sentence)));
 
 
             currentState = automaton.getStates()
                     .stream()
                     .filter( state -> state.getId().equals(transitionToMake.getTo()))
                     .findFirst()
-                    .orElseThrow(() -> new SentencaNaoAceita("Sentença não pertence à linguagem do autômato"));
+                    .orElseThrow(() -> new SentencaNaoAceita("Sentença não %s pertence à linguagem do autômato".formatted(sentence)));
 
         }
 
