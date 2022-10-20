@@ -1,6 +1,7 @@
 import classes.Automaton;
 import classes.State;
 import classes.Transition;
+import exceptions.SentencaNaoAceita;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -16,7 +17,6 @@ import javax.xml.transform.TransformerException;
 import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
@@ -42,6 +42,43 @@ public class Operations {
 
         return path;
     }
+
+    public static boolean runAutomaton(String sentence, Automaton automaton) throws SentencaNaoAceita {
+
+        var currentState = automaton.getStates()
+                .stream()
+                .filter(State::isInitial)
+                .findFirst().orElseThrow();//adicionar excecao para quando nao existe estado inicial
+
+
+        for (char x :sentence.toCharArray()){
+
+            State finalCurrentState = currentState;
+
+            var stateTransitions = automaton.getTransitions()
+                    .stream()
+                    .filter(transition1 -> transition1.getFrom().equals(finalCurrentState.getId()))
+                    .toList();
+
+            var transitionToMake = stateTransitions.stream()
+                    .filter(transition -> transition.getRead().equals(String.valueOf(x)))
+                    .findFirst()
+                    .orElseThrow(() -> new SentencaNaoAceita("Sentença não pertence à linguagem do autômato"));
+
+
+            currentState = automaton.getStates()
+                    .stream()
+                    .filter( state -> state.getId().equals(transitionToMake.getTo()))
+                    .findFirst()
+                    .orElseThrow(() -> new SentencaNaoAceita("Sentença não pertence à linguagem do autômato"));
+
+        }
+
+        return true;
+    }
+//    pegar estado inicial
+//    pegar transicoes que saem desse estado
+//    pegar transicao que le caractere x
 
     public static void saveAutomaton(Automaton automaton) throws ParserConfigurationException {
         DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
