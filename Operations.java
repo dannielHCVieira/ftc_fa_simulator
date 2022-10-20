@@ -43,7 +43,7 @@ public class Operations {
         return path;
     }
 
-    public static boolean runAutomaton(String sentence, Automaton automaton) throws SentencaNaoAceita {
+    public static void runAutomaton(String sentence, Automaton automaton) throws SentencaNaoAceita {
 
         var currentState = automaton.getStates()
                 .stream()
@@ -72,10 +72,7 @@ public class Operations {
                     .orElseThrow(() -> new SentencaNaoAceita("Sentença não %s pertence à linguagem do autômato".formatted(sentence)));
         }
 
-        if(currentState.isFinal()){
-            return true;
-
-        }else{
+        if(!currentState.isFinal()){
             throw new SentencaNaoAceita("Sentença %s não pertence à linguagem do autômato".formatted(sentence));
         }
 
