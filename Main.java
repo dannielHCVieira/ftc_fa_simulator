@@ -12,14 +12,15 @@ import java.io.IOException;
 import java.util.List;
 
 public class Main {
-    public static void main(String[] args) {
-         var state = new State("0", true, true, "q0");
-        var transition = new Transition("0", "0", "0");
-        var transition2 = new Transition("0", "0", "1");// (0 + 1)*
-        var automaton = new Automaton(List.of(state), List.of(transition, transition2));
+    public static void main(String[] args) throws ParserConfigurationException, IOException, SAXException {
+//         var state = new State("0", true, true, "q0");
+//        var transition = new Transition("0", "0", "0");
+//        var transition2 = new Transition("0", "0", "1");// (0 + 1)*
+//        var automaton = new Automaton(List.of(state), List.of(transition, transition2));
+        var automaton = Operations.readXml();
 
         try{
-            var str = "000111a";
+            var str = "";
             Operations.runAutomaton(str, automaton);
             System.out.println("Sentença aceita!");
 

@@ -50,7 +50,6 @@ public class Operations {
                 .filter(State::isInitial)
                 .findFirst().orElseThrow();//adicionar excecao para quando nao existe estado inicial
 
-
         for (char x :sentence.toCharArray()){
 
             State finalCurrentState = currentState;
@@ -71,10 +70,15 @@ public class Operations {
                     .filter( state -> state.getId().equals(transitionToMake.getTo()))
                     .findFirst()
                     .orElseThrow(() -> new SentencaNaoAceita("Sentença não %s pertence à linguagem do autômato".formatted(sentence)));
-
         }
 
-        return true;
+        if(currentState.isFinal()){
+            return true;
+
+        }else{
+            throw new SentencaNaoAceita("Sentença %s não pertence à linguagem do autômato".formatted(sentence));
+        }
+
     }
 //    pegar estado inicial
 //    pegar transicoes que saem desse estado
