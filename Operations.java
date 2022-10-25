@@ -25,6 +25,8 @@ import java.util.List;
 import java.io.File;
 
 import javax.swing.JFileChooser;
+import javax.swing.JFrame;
+import javax.swing.JOptionPane;
 import javax.swing.filechooser.*;
 
 public class Operations {
@@ -33,7 +35,7 @@ public class Operations {
         String path = "";
         JFileChooser j = new JFileChooser(FileSystemView.getFileSystemView().getHomeDirectory());
 
-        int r = j.showSaveDialog(null);
+        int r = j.showOpenDialog(null);
 
         if (r == JFileChooser.APPROVE_OPTION) {
             path = j.getSelectedFile().getAbsolutePath();
@@ -192,6 +194,21 @@ public class Operations {
 
         Automaton automatonRead = new Automaton(); // Passar a lista de transições e estados
         return automatonRead;
+    }
+
+    public static String readInput(){
+        String inputValue = JOptionPane.showInputDialog("Por favor, digita a palavra:");
+        return inputValue;
+    }
+
+    public static void showSucessDialog(String word){
+        JFrame j = new JFrame();
+        JOptionPane.showMessageDialog(j, "Sentença " + word + " aceita!", "Sucesso",JOptionPane.INFORMATION_MESSAGE);
+    }
+    
+    public static void showFailedDialog(String word){
+        JFrame j = new JFrame();
+        JOptionPane.showMessageDialog(j, "Sentença " + word + " não aceita!", "Falha",JOptionPane.WARNING_MESSAGE);
     }
 
     public static List<State> getStatesXML(Document doc) {
