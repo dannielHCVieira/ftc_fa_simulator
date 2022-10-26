@@ -20,9 +20,9 @@ import javax.xml.transform.stream.StreamResult;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 import java.io.File;
+import java.util.concurrent.atomic.AtomicReference;
 
 import javax.swing.JFileChooser;
 import javax.swing.filechooser.*;
@@ -112,6 +112,69 @@ public class Operations {
         }
 
     }
+
+    public static Automaton transformAFNToAFD(Automaton afn){
+        Set<String> alfabeto = new HashSet<>();//armazena todos os símbolos utilizados pelo afn de entrada
+
+        afn.getTransitions().forEach(transition -> alfabeto.add(transition.getRead()));
+
+        List<State> states = new ArrayList<>();
+        List<Transition> transitions = new ArrayList<>();
+
+        var initial = afn.getStates()
+                .stream()
+                .filter(State::isInitial)
+                .findFirst().orElseThrow();
+
+
+        Queue<State> nextStates = new LinkedList<>();
+        nextStates.add(initial);
+
+        while(!nextStates.isEmpty()){
+            var currentState = nextStates.poll();
+            var simulatedStates = List.of(currentState.getName().split(" "));
+
+
+
+            var currentTransitions = transitions.stream()
+                    .filter(transition -> simulatedStates.contains(transition.getFrom()))
+                    .toList();
+
+            alfabeto.forEach(simbolo ->{//percorre cada simbolo, encontra as transicoes feitas para aquele simbolo na lista atual de estados
+                //cria nova transicao para estado alvo simulando todos os estados atuais, se novo estado nao existe na lista de estados final cria um novo
+                var symbolTransitions = currentTransitions.stream()
+                        .filter(transition -> transition.getRead()
+                                .equals(simbolo)).toList();
+
+                String name = ""; //nome contendo ids referentes à aquele estado
+
+                symbolTransitions.//arrumar uma forma de criar apenas um estado para cada conjunto "a b c" == "b a c"
+
+            });
+
+//            transitions.forEach(transition -> {
+//                if(simulatedStates.contains(transition.getFrom())){
+//                    currentTransitions.add(transition);
+//                }
+//            });
+
+
+
+
+        }
+
+
+
+                /*
+                pegar um estado qualquer
+                pegar as transicoes de seus ids em seu nome
+                pegar transicoes de todos os ids
+                para cada simbolo do alfabeto criar uma transicao para o estado correspondente a transicao de todos os estados simulados
+                se o estado alvo nao existir adicionar ele à lista de estados e à fila.
+           * */
+
+    }
+
 
     private static void createTransition(Transition transition, Document document, Element root) {
         Element elementTransition = document.createElement("transition");
