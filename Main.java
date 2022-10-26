@@ -18,16 +18,19 @@ public class Main {
 //        var transition2 = new Transition("0", "0", "1");// (0 + 1)*
 //        var automaton = new Automaton(List.of(state), List.of(transition, transition2));
         var automaton = Operations.readXml();
-
-        try{
-            var str = "";
-            Operations.runAutomaton(str, automaton);
-            System.out.println("Sentença aceita!");
-
-        } catch (SentencaNaoAceita e) {
-            System.out.println(e.getMessage());
-            //throw new RuntimeException(e);
-        }
+        var str = Operations.readInput(); 
+        while(str != null){
+            try{
+                Operations.runAutomaton(str, automaton);
+                Operations.showSucessDialog(str);
+                str = Operations.readInput();
+                
+            } catch (SentencaNaoAceita e) {
+                Operations.showFailedDialog(str);
+                System.out.println(e.getMessage());
+                str = Operations.readInput();
+            }
+        }   
         //var automaton = Operations.readXml();
 
         //Operations.saveAutomaton(automaton);
