@@ -210,7 +210,7 @@ public class Operations {
                 para cada simbolo do alfabeto criar uma transicao para o estado correspondente a transicao de todos os estados simulados
                 se o estado alvo nao existir adicionar ele à lista de estados e à fila.
            * */
-
+        return new Automaton(states, transitions);
     }
 
 
