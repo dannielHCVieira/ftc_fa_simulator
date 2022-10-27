@@ -27,9 +27,79 @@ import java.util.concurrent.atomic.AtomicReference;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
+import javax.swing.JButton;
 import javax.swing.filechooser.*;
 
+import java.awt.event.*;
+
 public class Operations {
+    static JFrame frame;
+    static JButton openFileBtn;
+    static JButton convertAFNtoAFDBtn;
+    static JButton inputSentenceBtn;
+
+    static Automaton automaton;
+    static String input;
+
+    public static void openWindow(){
+        Operations.frame = new JFrame();
+        Operations.openFileBtn = new JButton("Abrir arquivo AF");
+        Operations.convertAFNtoAFDBtn = new JButton("Converter AFN para AFD");
+        Operations.inputSentenceBtn = new JButton("Entrar com sentença");
+
+        Operations.openFileBtn.setBounds(100,60,200,40);
+        Operations.openFileBtn.setFocusable(false);
+        Operations.openFileBtn.addActionListener(new ActionListener(){
+            public void actionPerformed(ActionEvent e){
+                try {
+                    automaton = Operations.readXml();
+                    inputSentenceBtn.setEnabled(automaton != null);
+                    convertAFNtoAFDBtn.setEnabled(automaton != null);
+                } catch (ParserConfigurationException | SAXException | IOException e1) {
+                    e1.printStackTrace();
+                }
+            }
+        });
+        
+        Operations.convertAFNtoAFDBtn.setBounds(100,100,200,40);
+        Operations.convertAFNtoAFDBtn.setFocusable(false);
+        Operations.convertAFNtoAFDBtn.setEnabled(automaton != null);
+        Operations.convertAFNtoAFDBtn.addActionListener(new ActionListener(){
+            public void actionPerformed(ActionEvent e){
+                automaton = Operations.transformAFNToAFD(automaton);
+            }
+        });
+
+        Operations.inputSentenceBtn.setBounds(100,140,200,40);
+        Operations.inputSentenceBtn.setFocusable(false);
+        Operations.inputSentenceBtn.setEnabled(automaton != null);
+        Operations.inputSentenceBtn.addActionListener(new ActionListener(){
+            public void actionPerformed(ActionEvent e){
+                input = Operations.readInput(); 
+                while(input != null){
+                    try{
+                        Operations.runAutomaton(input, automaton);
+                        Operations.showSucessDialog(input);
+                        input = Operations.readInput();
+                        
+                    } catch (SentencaNaoAceita ca) {
+                        Operations.showFailedDialog(input);
+                        System.out.println(ca.getMessage());
+                        input = Operations.readInput();
+                    }
+                }   
+            }
+        });
+
+        Operations.frame.add(Operations.openFileBtn);
+        Operations.frame.add(Operations.convertAFNtoAFDBtn);
+        Operations.frame.add(Operations.inputSentenceBtn);
+
+        Operations.frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        Operations.frame.setSize(420,420);
+        Operations.frame.setLayout(null);
+        Operations.frame.setVisible(true);
+    }
 
     public static String getFilePath() {
         String path = "";
@@ -150,7 +220,7 @@ public class Operations {
 
                 String name = ""; //nome contendo ids referentes à aquele estado
 
-                symbolTransitions.//arrumar uma forma de criar apenas um estado para cada conjunto "a b c" == "b a c"
+                //symbolTransitions.//arrumar uma forma de criar apenas um estado para cada conjunto "a b c" == "b a c"
 
             });
 
@@ -174,8 +244,8 @@ public class Operations {
                 para cada simbolo do alfabeto criar uma transicao para o estado correspondente a transicao de todos os estados simulados
                 se o estado alvo nao existir adicionar ele à lista de estados e à fila.
            * */
-
-    }
+        return afn;
+    }   
 
 
     private static void createTransition(Transition transition, Document document, Element root) {
@@ -250,6 +320,7 @@ public class Operations {
             List<State> stateList = getStatesXML(doc);
             List<Transition> transitionList = getTransitionsXML(doc);
             Automaton automatonRead = new Automaton(stateList, transitionList);
+
             return automatonRead;
         } catch (SAXException | IOException e) {
             e.printStackTrace();
