@@ -132,25 +132,65 @@ public class Operations {
         Queue<State> nextStates = new LinkedList<>();
         nextStates.add(initial);
 
+        int nextId = Integer.parseInt(initial.getId());
+
         while(!nextStates.isEmpty()){
+            nextId++;
+
             var currentState = nextStates.poll();
             var simulatedStates = List.of(currentState.getName().split(" "));
 
 
 
-            var currentTransitions = transitions.stream()
+            var currentTransitions = afn.getTransitions().stream()//transicoes envolvendo estado atual
                     .filter(transition -> simulatedStates.contains(transition.getFrom()))
                     .toList();
 
+            int finalNextId = nextId;
             alfabeto.forEach(simbolo ->{//percorre cada simbolo, encontra as transicoes feitas para aquele simbolo na lista atual de estados
+
                 //cria nova transicao para estado alvo simulando todos os estados atuais, se novo estado nao existe na lista de estados final cria um novo
                 var symbolTransitions = currentTransitions.stream()
                         .filter(transition -> transition.getRead()
-                                .equals(simbolo)).toList();
+                                .equals(simbolo)).sorted().toList();
+                List<String> targetIds = new ArrayList<>();
 
-                String name = ""; //nome contendo ids referentes à aquele estado
+                symbolTransitions.stream().forEach(transition -> targetIds.add(transition.getTo()));
 
-                symbolTransitions.//arrumar uma forma de criar apenas um estado para cada conjunto "a b c" == "b a c"
+
+                var targetStates = afn.getStates().stream()
+                        .filter(state -> targetIds.contains(state.getId()))
+                        .distinct()
+                        .toList();
+                boolean isInitial = targetStates.stream().anyMatch(State::isInitial);
+                boolean isFinal = targetStates.stream().anyMatch(State::isFinal);
+
+                StringBuilder name = new StringBuilder();
+
+                targetIds.stream().forEachOrdered(id -> name.append(id).append(" "));
+
+                var finalName = name.toString().strip();
+
+                var targetState = new State(String.valueOf(finalNextId),isInitial, isFinal, finalName);
+                var finalTransition = new Transition(currentState.getId(), String.valueOf(finalNextId) ,simbolo);
+
+                if(states.stream().noneMatch( state -> state.getName().equals(targetState.getName()))){
+                    states.add(targetState);
+                    nextStates.add(targetState);
+                }else{
+                    var existentState = states.stream()
+                            .filter(state -> state.getName()
+                                    .equals(targetState.getName())).findFirst().get();
+                    finalTransition.setTo(existentState.getId());
+                }
+
+                transitions.add(finalTransition);
+
+                //cria nome de novo estado
+
+                 //nome contendo ids referentes à aquele estado
+
+                //arrumar uma forma de criar apenas um estado para cada conjunto "a b c" == "b a c"
 
             });
 
@@ -159,10 +199,6 @@ public class Operations {
 //                    currentTransitions.add(transition);
 //                }
 //            });
-
-
-
-
         }
 
 
