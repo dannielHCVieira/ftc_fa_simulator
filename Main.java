@@ -28,6 +28,9 @@ public class Main {
         
         
         Operations.openWindow();
+//        var automaton = Operations.readXml();
+//        automaton = Operations.transformAFNToAFD(automaton);
+//        Operations.saveAutomaton(automaton);
         /* var automaton = Operations.readXml();
         var str = Operations.readInput(); 
         while(str != null){

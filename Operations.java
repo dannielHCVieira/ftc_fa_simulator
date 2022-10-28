@@ -22,7 +22,7 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.util.*;
 import java.io.File;
-import java.util.concurrent.atomic.AtomicReference;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
@@ -67,6 +67,11 @@ public class Operations {
         Operations.convertAFNtoAFDBtn.addActionListener(new ActionListener(){
             public void actionPerformed(ActionEvent e){
                 automaton = Operations.transformAFNToAFD(automaton);
+                try {
+                    Operations.saveAutomaton(automaton);
+                } catch (ParserConfigurationException ex) {
+                    throw new RuntimeException(ex);
+                }
             }
         });
 
@@ -174,7 +179,7 @@ public class Operations {
         automaton.getTransitions().forEach(transition -> createTransition(transition, output, root));
 
         try {
-            FileOutputStream outputFile = new FileOutputStream("output.xml");
+            FileOutputStream outputFile = new FileOutputStream("output.jff");
             writeXml(output, outputFile);
         } catch (IOException e) {
             e.printStackTrace();
@@ -190,8 +195,8 @@ public class Operations {
 
         afn.getTransitions().forEach(transition -> alfabeto.add(transition.getRead()));
 
-        List<State> states = new ArrayList<>();
-        List<Transition> transitions = new ArrayList<>();
+        List<State> states = new ArrayList<>();//estados finais de resposta
+        List<Transition> transitions = new ArrayList<>();//transicoes finais de resposta
 
         var initial = afn.getStates()
                 .stream()
@@ -202,77 +207,66 @@ public class Operations {
         Queue<State> nextStates = new LinkedList<>();
         nextStates.add(initial);
 
-        int nextId = Integer.parseInt(initial.getId());
+        AtomicInteger nextId = new AtomicInteger(Integer.parseInt(initial.getId()));
+        states.add(initial);
+
 
         while(!nextStates.isEmpty()){
-            nextId++;
 
             var currentState = nextStates.poll();
-            var simulatedStates = List.of(currentState.getName().split(" "));
-
+            var simulatedStates = List.of(currentState.getId().split(" "));
 
 
             var currentTransitions = afn.getTransitions().stream()//transicoes envolvendo estado atual
                     .filter(transition -> simulatedStates.contains(transition.getFrom()))
                     .toList();
 
-            int finalNextId = nextId;
-            alfabeto.forEach(simbolo ->{//percorre cada simbolo, encontra as transicoes feitas para aquele simbolo na lista atual de estados
 
-                //cria nova transicao para estado alvo simulando todos os estados atuais, se novo estado nao existe na lista de estados final cria um novo
-                var symbolTransitions = currentTransitions.stream()
-                        .filter(transition -> transition.getRead()
-                                .equals(simbolo)).sorted().toList();
-                List<String> targetIds = new ArrayList<>();
-
-                symbolTransitions.stream().forEach(transition -> targetIds.add(transition.getTo()));
+            if(!currentTransitions.isEmpty()) {
+                alfabeto.forEach(simbolo -> {//percorre cada simbolo, encontra as transicoes feitas para aquele simbolo na lista atual de estados
 
 
-                var targetStates = afn.getStates().stream()
-                        .filter(state -> targetIds.contains(state.getId()))
-                        .distinct()
-                        .toList();
-                boolean isInitial = targetStates.stream().anyMatch(State::isInitial);
-                boolean isFinal = targetStates.stream().anyMatch(State::isFinal);
+                    //cria nova transicao para estado alvo simulando todos os estados atuais, se novo estado nao existe na lista de estados final cria um novo
+                    var symbolTransitions = currentTransitions.stream()
+                            .filter(transition -> transition.getRead()
+                                    .equals(simbolo)).toList();
 
-                StringBuilder name = new StringBuilder();
+                    List<String> targetIds = new ArrayList<>();
 
-                targetIds.stream().forEachOrdered(id -> name.append(id).append(" "));
+                    symbolTransitions.stream().forEach(transition -> targetIds.add(transition.getTo()));
 
-                var finalName = name.toString().strip();
 
-                var targetState = new State(String.valueOf(finalNextId),isInitial, isFinal, finalName);
-                var finalTransition = new Transition(currentState.getId(), String.valueOf(finalNextId) ,simbolo);
+                    var targetStates = afn.getStates().stream()
+                            .filter(state -> targetIds.contains(state.getId()))
+                            .distinct()
+                            .toList();
+                    boolean isFinal = targetStates.stream().anyMatch(State::isFinal);
 
-                if(states.stream().noneMatch( state -> state.getName().equals(targetState.getName()))){
-                    states.add(targetState);
-                    nextStates.add(targetState);
-                }else{
-                    var existentState = states.stream()
-                            .filter(state -> state.getName()
-                                    .equals(targetState.getName())).findFirst().get();
-                    finalTransition.setTo(existentState.getId());
-                }
+                    StringBuilder newId = new StringBuilder();
 
-                transitions.add(finalTransition);
+                    targetIds.stream().forEachOrdered(id -> newId.append(id).append(" "));
 
-                //cria nome de novo estado
+                    var finalId = newId.toString().strip();
 
-                 //nome contendo ids referentes à aquele estado
+                    var targetState = new State(finalId, false, isFinal, "q" + nextId.getAndIncrement());
+                    var finalTransition = new Transition(currentState.getId(), String.valueOf(finalId), simbolo);
 
-                //arrumar uma forma de criar apenas um estado para cada conjunto "a b c" == "b a c"
+                    if (states.stream().noneMatch(state -> state.getId().equals(targetState.getId()))) {
+                        states.add(targetState);
+                        nextStates.add(targetState);
+                    } else {
+                        var existentState = states.stream()
+                                .filter(state -> state.getId()
+                                        .equals(targetState.getId())).findFirst().get();
+                        finalTransition.setTo(existentState.getId());
+                    }
 
-            });
+                    transitions.add(finalTransition);
 
-//            transitions.forEach(transition -> {
-//                if(simulatedStates.contains(transition.getFrom())){
-//                    currentTransitions.add(transition);
-//                }
-//            });
+                });
+            }
+
         }
-
-
-
                 /*
                 pegar um estado qualquer
                 pegar as transicoes de seus ids em seu nome
@@ -280,6 +274,16 @@ public class Operations {
                 para cada simbolo do alfabeto criar uma transicao para o estado correspondente a transicao de todos os estados simulados
                 se o estado alvo nao existir adicionar ele à lista de estados e à fila.
            * */
+
+        states.forEach(state -> {
+           state.setId(state.getId().replaceAll(" ",""));
+        });
+
+        transitions.forEach(transition -> {
+            transition.setFrom(transition.getFrom().replaceAll(" ", ""));
+            transition.setTo(transition.getTo().replaceAll(" ", ""));
+        });
+
         return new Automaton(states, transitions);
     }
 
