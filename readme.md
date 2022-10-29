@@ -9,3 +9,4 @@
   * Conversão de AFN para AFD
   * Simulação
   * Ler mais uma ou mais entradas do usuário
+  * 

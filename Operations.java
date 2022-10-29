@@ -47,7 +47,7 @@ public class Operations {
         Operations.convertAFNtoAFDBtn = new JButton("Converter AFN para AFD");
         Operations.inputSentenceBtn = new JButton("Entrar com sentença");
 
-        Operations.openFileBtn.setBounds(100,60,200,40);
+        Operations.openFileBtn.setBounds(50,60,300,40);
         Operations.openFileBtn.setFocusable(false);
         Operations.openFileBtn.addActionListener(new ActionListener(){
             public void actionPerformed(ActionEvent e){
@@ -61,16 +61,17 @@ public class Operations {
             }
         });
         
-        Operations.convertAFNtoAFDBtn.setBounds(100,100,200,40);
+        Operations.convertAFNtoAFDBtn.setBounds(50,110,300,40);
         Operations.convertAFNtoAFDBtn.setFocusable(false);
         Operations.convertAFNtoAFDBtn.setEnabled(automaton != null);
         Operations.convertAFNtoAFDBtn.addActionListener(new ActionListener(){
             public void actionPerformed(ActionEvent e){
                 automaton = Operations.transformAFNToAFD(automaton);
+                
             }
         });
 
-        Operations.inputSentenceBtn.setBounds(100,140,200,40);
+        Operations.inputSentenceBtn.setBounds(50,160,300,40);
         Operations.inputSentenceBtn.setFocusable(false);
         Operations.inputSentenceBtn.setEnabled(automaton != null);
         Operations.inputSentenceBtn.addActionListener(new ActionListener(){
@@ -96,7 +97,7 @@ public class Operations {
         Operations.frame.add(Operations.inputSentenceBtn);
 
         Operations.frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        Operations.frame.setSize(420,420);
+        Operations.frame.setSize(420,320);
         Operations.frame.setLayout(null);
         Operations.frame.setVisible(true);
     }
@@ -142,6 +143,9 @@ public class Operations {
                     .filter( state -> state.getId().equals(transitionToMake.getTo()))
                     .findFirst()
                     .orElseThrow(() -> new SentencaNaoAceita("Sentença não %s pertence à linguagem do autômato".formatted(sentence)));
+        
+            System.out.println("Sentença %s pertence à linguagem do autômato".formatted(sentence));
+
         }
 
         if(!currentState.isFinal()){
