@@ -1,12 +1,15 @@
-# To Do:
+FTC - Trabalho Prático I
 
-* Danniel Henrique:
-    - Leitura da entrada em XML  
-* João Victor:
-    - Escrita do resultado em XML
+Nomes: Danniel Henrique Correa Vieira
+       João Vitor Amorim Vieira
 
-* BackLog:
-  * Conversão de AFN para AFD
-  * Simulação
-  * Ler mais uma ou mais entradas do usuário
-  * 
+Versão: Java 19.0
+
+Como rodar:
+
+- Abra o nomedojar.jar
+- Selecione um arquivo XML ou JFF pelo botão de "Abrir arquivo"
+- Caso o arquivo contenha um automato finito não-deterministico (AFN), converta-o para deterministico para continuar.
+- A conversão salvará a nova máquina na pasta output.
+    OBS: Não é necessário abrir o arquivo, a máquina convertida substitui a anterior.
+- Selecione a opção de entrar sentença para fazer os testes da máquina aberta.

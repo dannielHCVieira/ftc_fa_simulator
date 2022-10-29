@@ -1,0 +1,16 @@
+Conversão de AFN para AFD concluída com sucesso!
+Sentença  não pertence à linguagem do autômato
+Sentença 0 não pertence à linguagem do autômato
+Sentença 1 não pertence à linguagem do autômato
+Sentença 00 não pertence à linguagem do autômato
+Sentença 01 não pertence à linguagem do autômato
+Sentença 10 não pertence à linguagem do autômato
+Sentença 11 não pertence à linguagem do autômato
+Sentença 000 não pertence à linguagem do autômato
+Sentença 001 não pertence à linguagem do autômato
+Sentença 010 não pertence à linguagem do autômato
+Sentença 011 não pertence à linguagem do autômato
+Sentença 100 pertence à linguagem do autômato
+Sentença 101 pertence à linguagem do autômato
+Sentença 110 pertence à linguagem do autômato
+Sentença 110 pertence à linguagem do autômato

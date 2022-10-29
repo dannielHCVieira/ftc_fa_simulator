@@ -18,11 +18,10 @@ import javax.swing.JOptionPane;
 import javax.swing.filechooser.*;
 
 import java.awt.event.*;
-public class Main {
-
+public class Main{
     public static void main(String[] args) throws ParserConfigurationException, IOException, SAXException {
         
-        Operations.openWindow();
+        Operations.openWindow();    
 
     }
 }

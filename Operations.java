@@ -69,6 +69,7 @@ public class Operations {
                 automaton = Operations.transformAFNToAFD(automaton);
                 try {
                     Operations.saveAutomaton(automaton);
+                    Operations.showSucessConversion();
                 } catch (ParserConfigurationException ex) {
                     throw new RuntimeException(ex);
                 }
@@ -128,7 +129,6 @@ public class Operations {
                 .findFirst().orElseThrow();//adicionar excecao para quando nao existe estado inicial
 
         for (char x :sentence.toCharArray()){
-
             State finalCurrentState = currentState;
 
             var stateTransitions = automaton.getTransitions()
@@ -147,8 +147,6 @@ public class Operations {
                     .filter( state -> state.getId().equals(transitionToMake.getTo()))
                     .findFirst()
                     .orElseThrow(() -> new SentencaNaoAceita("Sentença não %s pertence à linguagem do autômato".formatted(sentence)));
-        
-            System.out.println("Sentença %s pertence à linguagem do autômato".formatted(sentence));
 
         }
 
@@ -182,7 +180,7 @@ public class Operations {
         automaton.getTransitions().forEach(transition -> createTransition(transition, output, root));
 
         try {
-            FileOutputStream outputFile = new FileOutputStream("output.jff");
+            FileOutputStream outputFile = new FileOutputStream("output/output.jff");
             writeXml(output, outputFile);
         } catch (IOException e) {
             e.printStackTrace();
@@ -380,11 +378,28 @@ public class Operations {
 
     public static void showSucessDialog(String word){
         JFrame j = new JFrame();
+        if(word.isEmpty())
+            word = "λ";
         JOptionPane.showMessageDialog(j, "Sentença " + word + " aceita!", "Sucesso",JOptionPane.INFORMATION_MESSAGE);
+        System.out.println("Sentença %s pertence à linguagem do autômato".formatted(word));
     }
     
+    public static void showSucessConversion(){
+        JFrame j = new JFrame();
+        JOptionPane.showMessageDialog(j, "Conversão de AFN para AFD concluída com sucesso!", "Sucesso",JOptionPane.INFORMATION_MESSAGE);
+        System.out.println("Conversão de AFN para AFD concluída com sucesso!");
+    }
+
+    public static void showFailedConversion(){
+        JFrame j = new JFrame();
+        JOptionPane.showMessageDialog(j, "Conversão de AFN para AFD falhou!", "Falha",JOptionPane.WARNING_MESSAGE);
+        System.out.println("Conversão de AFN para AFD falhou!");
+    }
+
     public static void showFailedDialog(String word){
         JFrame j = new JFrame();
+        if(word.isEmpty())
+            word = "λ";
         JOptionPane.showMessageDialog(j, "Sentença " + word + " não aceita!", "Falha",JOptionPane.WARNING_MESSAGE);
     }
 
