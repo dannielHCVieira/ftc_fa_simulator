@@ -1,16 +1,16 @@
-Conversão de AFN para AFD concluída com sucesso!
-Sentença  não pertence à linguagem do autômato
-Sentença 0 não pertence à linguagem do autômato
-Sentença 1 não pertence à linguagem do autômato
-Sentença 00 não pertence à linguagem do autômato
-Sentença 01 não pertence à linguagem do autômato
-Sentença 10 não pertence à linguagem do autômato
-Sentença 11 não pertence à linguagem do autômato
-Sentença 000 não pertence à linguagem do autômato
-Sentença 001 não pertence à linguagem do autômato
-Sentença 010 não pertence à linguagem do autômato
-Sentença 011 não pertence à linguagem do autômato
-Sentença 100 pertence à linguagem do autômato
-Sentença 101 pertence à linguagem do autômato
-Sentença 110 pertence à linguagem do autômato
-Sentença 110 pertence à linguagem do autômato
+Conversï¿½o de AFN para AFD concluï¿½da com sucesso!
+Sentenï¿½a  nï¿½o pertence ï¿½ linguagem do autï¿½mato
+Sentenï¿½a 0 nï¿½o pertence ï¿½ linguagem do autï¿½mato
+Sentenï¿½a 1 nï¿½o pertence ï¿½ linguagem do autï¿½mato
+Sentenï¿½a 00 nï¿½o pertence ï¿½ linguagem do autï¿½mato
+Sentenï¿½a 01 nï¿½o pertence ï¿½ linguagem do autï¿½mato
+Sentenï¿½a 10 nï¿½o pertence ï¿½ linguagem do autï¿½mato
+Sentenï¿½a 11 nï¿½o pertence ï¿½ linguagem do autï¿½mato
+Sentenï¿½a 000 nï¿½o pertence ï¿½ linguagem do autï¿½mato
+Sentenï¿½a 001 nï¿½o pertence ï¿½ linguagem do autï¿½mato
+Sentenï¿½a 010 nï¿½o pertence ï¿½ linguagem do autï¿½mato
+Sentenï¿½a 011 nï¿½o pertence ï¿½ linguagem do autï¿½mato
+Sentenï¿½a 100 pertence ï¿½ linguagem do autï¿½mato
+Sentenï¿½a 101 pertence ï¿½ linguagem do autï¿½mato
+Sentenï¿½a 110 pertence ï¿½ linguagem do autï¿½mato
+Sentenï¿½a 111 pertence ï¿½ linguagem do autï¿½mato

@@ -7,7 +7,7 @@ Versão: Java 19.0
 
 Como rodar:
 
-- Abra o nomedojar.jar
+- Abra o AFSim.jar
 - Selecione um arquivo XML ou JFF pelo botão de "Abrir arquivo"
 - Caso o arquivo contenha um automato finito não-deterministico (AFN), converta-o para deterministico para continuar.
 - A conversão salvará a nova máquina na pasta output.
